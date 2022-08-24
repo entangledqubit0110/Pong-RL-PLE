@@ -1,0 +1,7 @@
+gameState:
+    player_y, cpu_y, ball_y: 0 to height, init at height/2
+    ball_x: 0 to width, init at width/2
+    ???
+    player_velocity: -speed to speed, where speed = 0.22*height
+    ball_x_velocity, ball_y_velocity: -speed to speed , where speed = 0.75*height
+    ???
