@@ -6,12 +6,15 @@ class Discretizer:
         self.MIN_X_POS = 0
         self.MAX_X_POS = game.width
         # limits for velocity
-        self.MAX_BALL_X_VELOCITY = game.ball.speed
-        self.MAX_BALL_Y_VELOCITY = game.ball.speed
-        self.MIN_BALL_X_VELOCITY = -1*game.ball.speed
-        self.MIN_BALL_Y_VELOCITY = -1*game.ball.speed
         self.MAX_PLAYER_VELOCITY = game.agentPlayer.speed
-        self.MIN_PLAYER_VELOCITY = -1*game.agentPlayer.speed
+        self.MIN_PLAYER_VELOCITY = -1*self.MAX_PLAYER_VELOCITY
+
+        self.MAX_BALL_X_VELOCITY = 1.05*game.ball.speed
+        self.MIN_BALL_X_VELOCITY = -1*self.MAX_BALL_X_VELOCITY
+
+        self.MAX_BALL_Y_VELOCITY = game.ball.speed + 0.01*self.MAX_PLAYER_VELOCITY
+        self.MIN_BALL_Y_VELOCITY = -1*self.MAX_BALL_Y_VELOCITY
+        
 
         print(self.MAX_BALL_X_VELOCITY, self.MIN_BALL_X_VELOCITY)
         print(self.MAX_BALL_Y_VELOCITY, self.MIN_BALL_Y_VELOCITY)
@@ -24,21 +27,19 @@ class Discretizer:
         """Return bin index given the value of a variable
         and its min & max as well as intended number of bins"""
         if val < min:   # invalid
-            print(f"Invalid value {val} less than {min}")
-            return -1
+            raise ValueError(f"Invalid value {val} less than {min}")
         
         if val > max:   # invalid 
-            print(f"Invalid value {val} more than {max}")
-            return -1
+            raise ValueError(f"Invalid value {val} more than {max}")
 
         bin_idx = 0                     # idx of the curr bin
         delta = (max - min)/num_bins    # length of a bin
-        temp = min + delta              # the upper limit of current bin
-        while temp <= max:
-            if val <= temp:  # falls in curr bin
+        u_bound = min + delta              # the upper limit of current bin
+        while u_bound <= max:
+            if val <= u_bound:  # falls in curr bin
                 break
             else:
-                temp += delta 
+                u_bound += delta 
                 bin_idx += 1
         
         return bin_idx
