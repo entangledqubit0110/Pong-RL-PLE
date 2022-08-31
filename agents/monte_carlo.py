@@ -13,6 +13,7 @@ class MonteCarlo:
 
         self.V_value = []
         self.Q_value = []
+        self.policy = []
         for i in range(self.num_states):                            
             # initialize Q-values as random
             # Q-value for all actions for a certain state
@@ -20,7 +21,10 @@ class MonteCarlo:
             self.Q_value.append(Q_s)
             
             # initialize V-values
-            self.V_value.append(random.random())        
+            self.V_value.append(random.random())   
+
+            # initialize policy
+            self.policy.append(random.choice(range(self.num_actions)))
         
         self.visit_mode = visit
         self.discount_factor = discount_factor
@@ -45,7 +49,10 @@ class MonteCarlo:
 
         state_action_visit = [[0]*self.num_actions]*self.num_states   # number of enocounters of state-action pair
         is_visited_sa = [[False]*self.num_actions]*self.num_states  # for first visit MC only
-        
+
+        total_returns_s = [0]*self.num_states       # calculate return for states in a specific episode
+        total_returns_s_a = [[0]*self.num_actions]*self.num_states  # calculate return for state-action pair in specific episode
+
         for episode in episodes:    
             # every episode is a list of 
             # 3 lists: states, actions, rewards
@@ -60,6 +67,10 @@ class MonteCarlo:
             for t in range(T):
                 S_t = states[t]         # S_t
                 A_t = actions[t]        # A_t
+
+                # increment total return for each encounter
+                total_returns_s[S_t] += G[t]
+                total_returns_s_a[S_t][A_t] += G[t] 
 
                 # increment state visit count according to mode of visit
                 # first-visit MC
@@ -80,25 +91,39 @@ class MonteCarlo:
                     state_action_visit[S_t][A_t] += 1
             
             
-                # incremental update after episode
-                # for V-values
-                self.V_value[S_t] += ((G[t] - self.V_value[S_t])/state_visit[S_t])
+            # incremental update after episode
+            # for V-values
+            for s in range(self.num_states):
+                if state_visit[s] > 0:  # update for only at least once visited
+                    self.V_value[s] += ((total_returns_s[s] - self.V_value[s])/state_visit[s])
 
                 # for Q-values
-                self.Q_value[S_t][A_t] += ((G[t] - self.Q_value[S_t][A_t])/state_action_visit[S_t][A_t])
+                for a in range(self.num_actions):
+                    if state_action_visit[s][a] > 0:    # update for only at least once visited
+                        self.Q_value[s][a] += ((total_returns_s_a[s] - self.Q_value[s][a])/state_action_visit[s][a])
 
-            # reinit is_visited before next episode
-            if self.visit_mode == "first":
-                for i in range(self.num_states):
-                    is_visited[i] = False
+            # reinit is_visited and total_return before next episode
+            for s in range(self.num_states):
+                total_returns_s[s] = 0
+
+                if self.visit_mode == "first":
+                    is_visited[s] = False
                 
-                    for j in range(self.num_actions):
-                        is_visited_sa[i][j] = False
+                for a in range(self.num_actions):
+                    total_returns_s_a[s][a] = 0
+
+                    if self.visit_mode == "first":
+                        is_visited_sa[s][a] = False
+
+        # update policy from updated Q values
+        # greedy choice
+        for s in range(self.num_states):
+            self.policy[s] = np.argmax(self.Q_value[s])
             
     def pickAction (self, state):
         """ Return an action given the state"""
-        action = np.argmax(self.Q_value[state])
-        return action
+        return self.policy[state]
+        
 
 
 
