@@ -17,7 +17,7 @@ class MonteCarlo:
         for i in range(self.num_states):                            
             # initialize Q-values as random
             # Q-value for all actions for a certain state
-            Q_s = [np.random.random_sample(size= num_actions)]      
+            Q_s = np.random.random_sample(size= num_actions)
             self.Q_value.append(Q_s)
             
             # initialize V-values
@@ -100,7 +100,7 @@ class MonteCarlo:
                 # for Q-values
                 for a in range(self.num_actions):
                     if state_action_visit[s][a] > 0:    # update for only at least once visited
-                        self.Q_value[s][a] += ((total_returns_s_a[s] - self.Q_value[s][a])/state_action_visit[s][a])
+                        self.Q_value[s][a] += ((total_returns_s_a[s][a] - self.Q_value[s][a])/state_action_visit[s][a])
 
             # reinit is_visited and total_return before next episode
             for s in range(self.num_states):
