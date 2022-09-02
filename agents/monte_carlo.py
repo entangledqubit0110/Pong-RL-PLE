@@ -1,34 +1,65 @@
-import random
 import numpy as np
+from agents.util import print_msg_box
 
 class MonteCarlo:
     """
     Monte Carlo Agent
     -------------------------
     Implements first visit and every visit MC agents
+    
+    Parameters
+    -------------------------
+    num_states:     number of observable states
+    num_actions:    number of total possible actions 
+                    (assumption => every action is possible in every state)
+    visit:          "first" or "every", default value is "every"
+    discount_factor: discount factor for return calculation
+    epsilon:        default None when we use pure greedy policy, can be a float value for constant epsilon
+    epsilon_mode:   "constant" or "inverse"
+                    When "constant", takes the value of epsilon
+                    When "inverse, uses 1/episode no. that follows GLIE property
+    alpha:          default None when 1/N(s) is used for Q-value updates, 
+                    can be a float (<1) for constant/inverse epsilon
+    alpha_mode:     "constant" or "inverse"
+                    When "constant", takes the value from alpha
+                    When "inverse", takes the 1/((episode no.)^alpha) for scaling
     """
-    def __init__(self, num_states, num_actions, visit= "first", discount_factor= 0.9):
+    def __init__(self, num_states, num_actions, visit= "every", discount_factor= 0.9, epsilon= None, 
+                epsilon_mode= "inverse", alpha= None, alpha_mode= "inverse"):
         self.num_states = num_states
         self.num_actions = num_actions
+        self.episode_count = 0
 
-        self.V_value = []
         self.Q_value = []
-        self.policy = []
         for i in range(self.num_states):                            
             # initialize Q-values as random
             # Q-value for all actions for a certain state
-            Q_s = np.random.random_sample(size= num_actions)
-            self.Q_value.append(Q_s)
-            
-            # initialize V-values
-            self.V_value.append(random.random())   
+            self.Q_value.append(np.random.random_sample(size= num_actions))
+        
+        # number of enocounters of state-action pair
+        self.state_action_visit = [[0]*self.num_actions]*self.num_states
+        self.policy = np.random.choice(range(self.num_actions), size= (self.num_states))
 
-            # initialize policy
-            self.policy.append(random.choice(range(self.num_actions)))
         
         self.visit_mode = visit
         self.discount_factor = discount_factor
-    
+
+        self.epsilon = epsilon
+        self.epsilon_mode = epsilon_mode
+        # for inverse epsilon, initialize as 1 cause passed value doesn't matter
+        if self.epsilon_mode == "inverse":
+            self.epsilon = 1
+
+        self.alpha = alpha
+        self.alpha_mode = alpha_mode
+
+        info = f"~ Monte Carlo Agent ~\n[{self.visit_mode}-visit]\n\t[discount factor: {self.discount_factor}]\n\t"
+        if self.epsilon is not None:
+            info += f"[epsilon-greedy: {self.epsilon}]\n\t"
+        if self.alpha is not None:
+            info += f"[alpha: {self.alpha}]\n\t"
+
+        print_msg_box(info)
 
     def calculateReturn (self, rewards, T):
         """Returns the return values for 0 to T-1"""
@@ -42,18 +73,14 @@ class MonteCarlo:
         
         return G
 
-    def update (self, episodes):
-        """Update V and Q-values after single/multiple episode(s)"""
-        state_visit = [0]*self.num_states       # number of encounter of a state across episodes
-        is_visited = [False]*self.num_states    # for first_visit MC only
+    def updateQ (self, episodes):
+        """Update Q-values after single/multiple episode(s)"""
 
-        state_action_visit = [[0]*self.num_actions]*self.num_states   # number of enocounters of state-action pair
         is_visited_sa = [[False]*self.num_actions]*self.num_states  # for first visit MC only
 
-        total_returns_s = [0]*self.num_states       # calculate return for states in a specific episode
-        total_returns_s_a = [[0]*self.num_actions]*self.num_states  # calculate return for state-action pair in specific episode
-
         for episode in episodes:    
+            self.episode_count += 1     # increment episode count
+
             # every episode is a list of 
             # 3 lists: states, actions, rewards
             states = episode[0]
@@ -68,61 +95,64 @@ class MonteCarlo:
                 S_t = states[t]         # S_t
                 A_t = actions[t]        # A_t
 
-                # increment total return for each encounter
-                total_returns_s[S_t] += G[t]
-                total_returns_s_a[S_t][A_t] += G[t] 
-
-                # increment state visit count according to mode of visit
-                # first-visit MC
-                if self.visit_mode == "first" and (not is_visited[S_t]):  
-                    is_visited[S_t] = True      # set visited
-                    state_visit[S_t] += 1       # increment counter
-                # every-visit MC
-                elif self.visit_mode == "every":    
-                    state_visit[S_t] += 1       # increment counter
-                
-                # increment state-action visit count also
+                # increment state-action visit count according to mode of visit
                 # first-visit MC
                 if self.visit_mode == "first" and (not is_visited_sa[S_t][A_t]):  
                     is_visited_sa[S_t][A_t] = True  # set visited
-                    state_action_visit[S_t][A_t] += 1
+                    self.state_action_visit[S_t][A_t] += 1
+
+                    # forgetting enabled or not
+                    if self.alpha is None:
+                        self.Q_value[S_t][A_t] += (G[t] - self.Q_value[S_t][A_t])/self.state_action_visit[S_t][A_t]
+                    else:
+                        self.Q_value[S_t][A_t] += self.alpha * (G[t] - self.Q_value[S_t][A_t])
+
                 # every-visit MC
                 elif self.visit_mode == "every":
-                    state_action_visit[S_t][A_t] += 1
+                    self.state_action_visit[S_t][A_t] += 1
+
+                    # forgetting enabled or not
+                    if self.alpha is None:
+                        self.Q_value[S_t][A_t] += (G[t] - self.Q_value[S_t][A_t])/self.state_action_visit[S_t][A_t]
+                    else:
+                        self.Q_value[S_t][A_t] += self.alpha * (G[t] - self.Q_value[S_t][A_t])
             
+            # reinit is_visited before next episode
+            if self.visit_mode == "first":
+                for s in range(self.num_states):
+                    for a in range(self.num_actions):
+                            is_visited_sa[s][a] = False
             
-            # incremental update after episode
-            # for V-values
-            for s in range(self.num_states):
-                if state_visit[s] > 0:  # update for only at least once visited
-                    self.V_value[s] += ((total_returns_s[s] - self.V_value[s])/state_visit[s])
+            # update alpha if inverse alpha is in action
+            if self.alpha_mode == "inverse":
+                self.alpha = 1/(self.episode_count)
 
-                # for Q-values
-                for a in range(self.num_actions):
-                    if state_action_visit[s][a] > 0:    # update for only at least once visited
-                        self.Q_value[s][a] += ((total_returns_s_a[s][a] - self.Q_value[s][a])/state_action_visit[s][a])
-
-            # reinit is_visited and total_return before next episode
-            for s in range(self.num_states):
-                total_returns_s[s] = 0
-
-                if self.visit_mode == "first":
-                    is_visited[s] = False
-                
-                for a in range(self.num_actions):
-                    total_returns_s_a[s][a] = 0
-
-                    if self.visit_mode == "first":
-                        is_visited_sa[s][a] = False
-
-        # update policy from updated Q values
-        # greedy choice
+    def updatePolicy (self):
+        """Update the policy based on current Q-values"""
         for s in range(self.num_states):
-            self.policy[s] = np.argmax(self.Q_value[s])
-            
-    def pickAction (self, state):
+            q = self.Q_value[s]
+            a_greedy = np.argmax(q)     # the greedy choice from Q
+            if self.epsilon is None:    # pure greedy choice
+                self.policy[s] = a_greedy
+            else:
+                # epsilon greedy
+                prob_a = [(self.epsilon/self.num_actions)]*self.num_actions
+                prob_a[a_greedy] += 1 - self.epsilon
+                a_epsilon_greedy = np.random.choice(range(self.num_actions), p= prob_a)
+                self.policy[s] = a_epsilon_greedy
+        
+        # update epsilon for next policy update
+        if self.epsilon is not None:
+            if self.epsilon_mode == "inverse":
+                self.epsilon = 1/self.episode_count
+
+
+
+    def pickAction (self, obs):
         """ Return an action given the state"""
-        return self.policy[state]
+        return self.policy[obs]
+        
+
         
 
 

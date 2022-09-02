@@ -85,7 +85,7 @@ game = Pong(width= WIDTH, height= HEIGHT)
 p = PLE(game, fps=FPS, display_screen=True, force_fps=True)
 
 
-agent = MonteCarlo(num_states= NUM_STATES, num_actions= NUM_ACTIONS)
+agent = MonteCarlo(num_states= NUM_STATES, num_actions= NUM_ACTIONS, epsilon= 0.05)
 
 # discretizer
 dz = Discretizer(game, num_pos_bins=NUM_POS_BINS, num_velocity_bins=NUM_VEL_BINS)
@@ -115,7 +115,9 @@ while True:
             # store episode information
             episode_idx += 1        
             episode = [states, actions, rewards]
+
             print(actions)
+            
             episodes.append(episode)
             print(f"episode {episode_idx}: {sum(rewards)}")
 
@@ -162,4 +164,5 @@ while True:
 
         rewards.append(reward)
 
-    agent.update(episodes=episodes)
+    agent.updateQ(episodes=episodes)
+    agent.updatePolicy()
