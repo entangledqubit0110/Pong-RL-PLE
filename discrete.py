@@ -27,10 +27,14 @@ class Discretizer:
         """Return bin index given the value of a variable
         and its min & max as well as intended number of bins"""
         if val < min:   # invalid
-            raise ValueError(f"Invalid value {val} less than {min}")
+            ## TODO
+            val = min   # temporary solution
+            # raise ValueError(f"Invalid value {val} less than {min}")
         
-        if val > max:   # invalid 
-            raise ValueError(f"Invalid value {val} more than {max}")
+        if val > max:   # invalid
+            ## TODO
+            val = max   # temporary solution
+            # raise ValueError(f"Invalid value {val} more than {max}")
 
         bin_idx = 0                     # idx of the curr bin
         delta = (max - min)/num_bins    # length of a bin
