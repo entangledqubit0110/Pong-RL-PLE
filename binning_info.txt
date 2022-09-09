@@ -3,7 +3,14 @@ gameState:
     ball_x: 0 to width, init at width/2
     ----------------------------------------
     player_velocity: -speed to speed, where speed = 0.22*height
-    ball_x_velocity: 
+
+    # OLD
+    ball_x_velocity:
     -(speed+delta) to (speed+delta) , where speed = 0.75*height, delta = 0.05*speed
     ball_y_velocity:
     -(speed+delta) to (speed+delta) , where speed = 0.75*height, delta = 0.01*MAX_PLAYER_VELOCITY = 0.01*0.22*height
+
+    # UPDATED
+    velocity bound by game dimensions
+    ball_x_velocity: -width to width
+    ball_y_velocity: -height to height

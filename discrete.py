@@ -1,50 +1,41 @@
+import numpy as np
+
 class Discretizer:
-    def __init__(self, game, num_pos_bins, num_velocity_bins):
-        # limits for position
-        self.MIN_Y_POS = 0
-        self.MAX_Y_POS = game.height
-        self.MIN_X_POS = 0
-        self.MAX_X_POS = game.width
-        # limits for velocity
-        self.MAX_PLAYER_VELOCITY = game.agentPlayer.speed
-        self.MIN_PLAYER_VELOCITY = -1*self.MAX_PLAYER_VELOCITY
-
-        self.MAX_BALL_X_VELOCITY = 1.05*game.ball.speed
-        self.MIN_BALL_X_VELOCITY = -1*self.MAX_BALL_X_VELOCITY
-
-        self.MAX_BALL_Y_VELOCITY = game.ball.speed + 0.01*self.MAX_PLAYER_VELOCITY
-        self.MIN_BALL_Y_VELOCITY = -1*self.MAX_BALL_Y_VELOCITY
-        
-
-        print(self.MAX_BALL_X_VELOCITY, self.MIN_BALL_X_VELOCITY)
-        print(self.MAX_BALL_Y_VELOCITY, self.MIN_BALL_Y_VELOCITY)
+    def __init__(self, bins, limits):
+        # maximum and minimum for variables
+        # dict contains a tuple of (min, max) for eachs
+        self.limits = limits
 
         # number of bins for discretization
-        self.num_pos_bins = num_pos_bins
-        self.num_velocity_bins = num_velocity_bins
+        # a dict that contains no of bins for each
+        self.bins = bins
 
-    def getBin (self, val, min, max, num_bins):
-        """Return bin index given the value of a variable
-        and its min & max as well as intended number of bins"""
-        if val < min:   # invalid
-            ## TODO
-            val = min   # temporary solution
-            # raise ValueError(f"Invalid value {val} less than {min}")
+    def createBins (self):
+        """Create bins using numpy and given limits and number of bins"""
+        self.binBoundary = {}
+        self.binBoundary["player_y"] = np.linspace(self.limits['player_y'][0] ,self.limits['player_y'][1], self.bins['player_y'])
+        self.binBoundary["player_velocity"]: np.linspace(self.limits["player_velocity"][0], self.limits["player_velocity"][1], self.bins["player_velocity"])
+        self.binBoundary["cpu_y"] = np.linspace(self.limits["cpu_y"][0] ,self.limits["cpu_y"][1], self.bins["cpu_y"])
+        self.binBoundary["ball_x"] = np.linspace(self.limits["ball_x"][0] ,self.limits["ball_x"][1], self.bins["ball_x"])
+        self.binBoundary["ball_y"] = np.linspace(self.limits["ball_y"][0] ,self.limits["ball_y"][1], self.bins["ball_y"])
+        self.binBoundary["ball_velocity_x"] = np.linspace(self.limits["ball_velocity_x"][0], self.limits["ball_velocity_x"][1], self.bins["ball_velocity_x"])
+        self.binBoundary["ball_velocity_y"] = np.linspace(self.limits["ball_velocity_y"][0], self.limits["ball_velocity_y"][1], self.bins["ball_velocity_y"])
+
+    def getBinIdx (self, key, val):
+        """Return bin index given the value of a "key" variable"""
+        if val < self.limits[key][0]:   # invalid
+            raise ValueError(f"Invalid value {val} less than {self.limits[key][0]}")
         
-        if val > max:   # invalid
-            ## TODO
-            val = max   # temporary solution
-            # raise ValueError(f"Invalid value {val} more than {max}")
+        if val > self.limits[key][1]:   # invalid
+            raise ValueError(f"Invalid value {val} more than {self.limits[key][1]}")
 
-        bin_idx = 0                     # idx of the curr bin
-        delta = (max - min)/num_bins    # length of a bin
-        u_bound = min + delta              # the upper limit of current bin
-        while u_bound <= max:
-            if val <= u_bound:  # falls in curr bin
-                break
-            else:
-                u_bound += delta 
-                bin_idx += 1
+        if val == self.limits[key][1]: # if upper limit, consider in last bin
+            return (self.bins[key] - 1)
+        
+        if self.bins[key] == 1:     # ignore scenario
+            return 0
+
+        bin_idx = np.digitize(val, bins= self.binBoundary[key]) - 1
         
         return bin_idx
 
@@ -52,33 +43,11 @@ class Discretizer:
 
 
     def discretize (self, gameState):
-        player_y = gameState["player_y"]
-        player_velocity_y = gameState["player_velocity"]
-        cpu_y = gameState["cpu_y"]
-        ball_x = gameState["ball_x"]
-        ball_y = gameState["ball_y"]
-        ball_velocity_x = gameState["ball_velocity_x"]
-        ball_velocity_y = gameState["ball_velocity_y"]
 
-        d_player_y = self.getBin(player_y, self.MIN_Y_POS ,self.MAX_Y_POS, self.num_pos_bins)
-        d_player_vel_y = self.getBin(player_velocity_y, self.MIN_PLAYER_VELOCITY, self.MAX_PLAYER_VELOCITY, self.num_velocity_bins)
+        return_dict = {}
+        for key in gameState.keys():
+            return_dict[key] = self.getBinIdx(key, gameState[key])
 
-        d_cpu_y = self.getBin(cpu_y, self.MIN_Y_POS ,self.MAX_Y_POS, self.num_pos_bins)
-
-        d_ball_x = self.getBin(ball_x, self.MIN_X_POS ,self.MAX_X_POS, self.num_pos_bins)
-        d_ball_y = self.getBin(ball_y, self.MIN_Y_POS ,self.MAX_Y_POS, self.num_pos_bins)
-        d_ball_vel_x = self.getBin(ball_velocity_x, self.MIN_BALL_X_VELOCITY, self.MAX_BALL_X_VELOCITY, self.num_velocity_bins)
-        d_ball_vel_y = self.getBin(ball_velocity_y, self.MIN_BALL_Y_VELOCITY, self.MAX_BALL_Y_VELOCITY, self.num_velocity_bins)
-        
-        return_dict =   {
-                            "player_y": d_player_y,
-                            "player_velocity": d_player_vel_y,
-                            "cpu_y": d_cpu_y,
-                            "ball_x": d_ball_x,
-                            "ball_y": d_ball_y,
-                            "ball_velocity_x": d_ball_vel_x,
-                            "ball_velocity_y": d_ball_vel_y
-                        }
         return return_dict
 
     

@@ -1,5 +1,4 @@
 import numpy as np
-from agents.util import print_msg_box
 
 class MonteCarlo:
     """
@@ -14,18 +13,22 @@ class MonteCarlo:
                     (assumption => every action is possible in every state)
     visit:          "first" or "every", default value is "every"
     discount_factor: discount factor for return calculation
-    epsilon:        default None when we use pure greedy policy, can be a float value for constant epsilon
-    epsilon_mode:   "constant" or "inverse"
-                    When "constant", takes the value of epsilon
-                    When "inverse, uses 1/episode no. that follows GLIE property
-    alpha:          default None when 1/N(s) is used for Q-value updates, 
-                    can be a float (<1) for constant/inverse epsilon
-    alpha_mode:     "constant" or "inverse"
-                    When "constant", takes the value from alpha
-                    When "inverse", takes the 1/((episode no.)^alpha) for scaling
+
+    epsilon_mode:   "constant" or "inverse" or None
+                    default None when we use pure greedy policy
+                    when "constant", takes the value of epsilon
+                    when "inverse, uses 1/episode no. that follows GLIE property
+    epsilon:        can be a float value for constant epsilon
+
+    alpha_mode:     "constant" or "inverse" or None
+                    default None when 1/N(s) is used for Q-value updates
+                    when "constant", takes the value from alpha
+                    when "inverse", takes the 1/((episode no.)^alpha) for scaling
+    alpha:          can be a float for constant/inverse epsilon
+
     """
-    def __init__(self, num_states, num_actions, visit= "every", discount_factor= 0.9, epsilon= None, 
-                epsilon_mode= "inverse", alpha= None, alpha_mode= "inverse"):
+    def __init__(self, num_states, num_actions, visit= "every", discount_factor= 0.9, 
+                epsilon= None, epsilon_mode= None, alpha= None, alpha_mode= None):
         self.num_states = num_states
         self.num_actions = num_actions
         self.episode_count = 0
@@ -44,22 +47,31 @@ class MonteCarlo:
         self.visit_mode = visit
         self.discount_factor = discount_factor
 
-        self.epsilon = epsilon
         self.epsilon_mode = epsilon_mode
+        self.epsilon = epsilon
         # for inverse epsilon, initialize as 1 cause passed value doesn't matter
         if self.epsilon_mode == "inverse":
             self.epsilon = 1
 
-        self.alpha = alpha
         self.alpha_mode = alpha_mode
+        self.alpha = alpha
+        self.alpha_power = None
+        # if inverse alpha, initialize as 1, store the power of inverse seperately
+        if self.alpha_mode == "inverse":
+            # store the power of alpha updates
+            self.alpha_power = self.alpha if self.alpha is not None else 1.0
+            self.alpha = 1      # make multiplier factor 1
 
-        info = f"~ Monte Carlo Agent ~\n[{self.visit_mode}-visit]\n\t[discount factor: {self.discount_factor}]\n\t"
-        if self.epsilon is not None:
-            info += f"[epsilon-greedy: {self.epsilon}]\n\t"
-        if self.alpha is not None:
-            info += f"[alpha: {self.alpha}]\n\t"
 
-        print_msg_box(info)
+
+    def __str__(self) -> str:
+        s = "Monte Carlo Agent\n"
+        for key in self.__dict__:
+            if key in ['num_states', 'num_actions', 'visit_mode', 'discount_factor',
+                        'epsilon_mode', 'epsilon', 'alpha_mode', 'alpha']:
+                        s += f"{key}: {self.__dict__[key]}\n"
+        return s
+
 
     def calculateReturn (self, rewards, T):
         """Returns the return values for 0 to T-1"""
@@ -102,7 +114,7 @@ class MonteCarlo:
                     self.state_action_visit[S_t][A_t] += 1
 
                     # forgetting enabled or not
-                    if self.alpha is None:
+                    if self.alpha_mode is None:
                         self.Q_value[S_t][A_t] += (G[t] - self.Q_value[S_t][A_t])/self.state_action_visit[S_t][A_t]
                     else:
                         self.Q_value[S_t][A_t] += self.alpha * (G[t] - self.Q_value[S_t][A_t])
@@ -112,7 +124,7 @@ class MonteCarlo:
                     self.state_action_visit[S_t][A_t] += 1
 
                     # forgetting enabled or not
-                    if self.alpha is None:
+                    if self.alpha_mode is None:
                         self.Q_value[S_t][A_t] += (G[t] - self.Q_value[S_t][A_t])/self.state_action_visit[S_t][A_t]
                     else:
                         self.Q_value[S_t][A_t] += self.alpha * (G[t] - self.Q_value[S_t][A_t])
@@ -125,14 +137,14 @@ class MonteCarlo:
             
             # update alpha if inverse alpha is in action
             if self.alpha_mode == "inverse":
-                self.alpha = 1/(self.episode_count)
+                self.alpha = 1/np.power(self.episode_count, self.alpha_power)
 
     def updatePolicy (self):
         """Update the policy based on current Q-values"""
         for s in range(self.num_states):
             q = self.Q_value[s]
             a_greedy = np.argmax(q)     # the greedy choice from Q
-            if self.epsilon is None:    # pure greedy choice
+            if self.epsilon_mode is None:    # pure greedy choice
                 self.policy[s] = a_greedy
             else:
                 # epsilon greedy
@@ -142,9 +154,8 @@ class MonteCarlo:
                 self.policy[s] = a_epsilon_greedy
         
         # update epsilon for next policy update
-        if self.epsilon is not None:
-            if self.epsilon_mode == "inverse":
-                self.epsilon = 1/self.episode_count
+        if self.epsilon_mode == "inverse":
+            self.epsilon = 1/self.episode_count
 
 
 
