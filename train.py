@@ -2,6 +2,8 @@ from ple.games.pong import Pong
 from ple import PLE
 from discrete import Discretizer
 from agents.monte_carlo import MonteCarlo
+from agents.util import print_msg_box
+from pprint import pprint
 
 # game panel details
 WIDTH = 220
@@ -11,12 +13,12 @@ FPS = 60
 # discretization params
 NUM_BALL_X_BINS = 10            # important
 NUM_BALL_Y_BINS = 10            # important
-NUM_PLAYER_Y_BINS = 8           # important
+NUM_PLAYER_Y_BINS = 6           # important
 
-NUM_BALL_X_VEL_BINS = 6         # less important
-NUM_BALL_Y_VEL_BINS = 6         # less important
-NUM_CPU_Y_BINS = 4              # less important
+NUM_BALL_X_VEL_BINS = 4         # less important
+NUM_BALL_Y_VEL_BINS = 4         # less important
 
+NUM_CPU_Y_BINS = 1              # ignore for now == single bin
 NUM_PLAYER_VEL_BINS = 1         # ignore for now == single bin
 
 bins = {}
@@ -27,7 +29,8 @@ bins["ball_y"] = NUM_BALL_Y_BINS
 bins["ball_velocity_x"] = NUM_BALL_X_VEL_BINS
 bins["ball_velocity_y"] = NUM_BALL_Y_VEL_BINS
 bins["player_velocity"] = NUM_PLAYER_VEL_BINS
-print(f"bins: {bins}")
+print_msg_box(" BINS ")
+pprint(bins)
 
 NUM_STATES =    (NUM_BALL_X_BINS*
                 NUM_BALL_Y_BINS*
@@ -118,12 +121,16 @@ limits["ball_velocity_x"] = (MIN_BALL_X_VELOCITY, MAX_BALL_X_VELOCITY)
 MAX_BALL_Y_VELOCITY = game.height
 MIN_BALL_Y_VELOCITY = -1*MAX_BALL_Y_VELOCITY
 limits["ball_velocity_y"] = (MIN_BALL_Y_VELOCITY, MAX_BALL_Y_VELOCITY)
-print(f"limits: {limits}")
+
+print_msg_box(" LIMITS ")
+pprint(limits)
 
 
 # agent
 agent = MonteCarlo(num_states= NUM_STATES, num_actions= NUM_ACTIONS, epsilon_mode="inverse",
                     alpha_mode="inverse", alpha=1.0)
+
+print_msg_box(" AGENT ")
 print(agent)
 
 # discretizer
@@ -138,6 +145,7 @@ episode_in_generation = 1
 
 # start game
 p.init()
+
 # while True:
 #     p.reset_game()
 #     # stores episodes for one generation
@@ -193,12 +201,21 @@ p.init()
 states = []
 actions = []
 rewards = []
+
+# logfile
+fp = open("rewards.log", "w")
+
 while True: 
     if p.game_over():
         # store episode information
         episode_idx += 1        
         episode = [states, actions, rewards]
         print(f"episode {episode_idx}: {sum(rewards)}")
+
+        # logging
+        fp.write(str(sum(rewards)))
+
+        # update agent
         agent.updateQ([episode])
         agent.updatePolicy()
 
@@ -214,7 +231,6 @@ while True:
     discreteState = dz.discretize(gameState)
     stateIdx = getGameStateIdx(discreteState)
     states.append(stateIdx)
-    print(f"{discreteState}: {stateIdx}")
 
     # action
     actionIdx = agent.pickAction(stateIdx)
