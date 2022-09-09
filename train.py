@@ -213,7 +213,7 @@ while True:
         print(f"episode {episode_idx}: {sum(rewards)}")
 
         # logging
-        fp.write(str(sum(rewards)))
+        fp.write(f"{sum(rewards)}\n")
 
         # update agent
         agent.updateQ([episode])
