@@ -11,12 +11,12 @@ HEIGHT = 148
 FPS = 60
 
 # discretization params
-NUM_BALL_X_BINS = 6            # important
-NUM_BALL_Y_BINS = 6            # important
+NUM_BALL_X_BINS = 8            # important
+NUM_BALL_Y_BINS = 8            # important
 NUM_PLAYER_Y_BINS = 4           # important
 
-NUM_BALL_X_VEL_BINS = 2         # less important
-NUM_BALL_Y_VEL_BINS = 2         # less important
+NUM_BALL_X_VEL_BINS = 4         # less important
+NUM_BALL_Y_VEL_BINS = 4         # less important
 
 NUM_CPU_Y_BINS = 1              # ignore for now == single bin
 NUM_PLAYER_VEL_BINS = 1         # ignore for now == single bin
@@ -128,7 +128,7 @@ pprint(limits)
 
 # agent
 agent = MonteCarlo(num_states= NUM_STATES, num_actions= NUM_ACTIONS, epsilon_mode="inverse",
-                    alpha_mode="inverse", alpha=1.0)
+                    alpha_mode=None)
 
 print_msg_box(" AGENT ")
 print(agent)
@@ -136,7 +136,7 @@ print(agent)
 # discretizer
 dz = Discretizer(limits= limits, bins= bins)
 dz.createBins()
-# print(dz.binBoundary)
+pprint(dz.binBoundary)
 
 
 episode_idx = 0
@@ -146,64 +146,15 @@ episode_in_generation = 1
 # start game
 p.init()
 
-# while True:
-#     p.reset_game()
-#     # stores episodes for one generation
-#     episodes = []
-    
-#     # store for every episode
-#     states = []
-#     actions = []
-#     rewards = []
-#     k = 0
-#     while True: 
-#         if p.game_over():
-#             # store episode information
-#             episode_idx += 1        
-#             episode = [states, actions, rewards]
-#             episodes.append(episode)
-#             print(f"episode {episode_idx}: {sum(rewards)}")
-
-
-#             k += 1
-#             # check if end of an generation
-#             if k == episode_in_generation:
-#                 generation_idx += 1
-#                 print(f"END OF generation {generation_idx}")
-#                 break
-            
-#             # reset before next episode
-#             states.clear()
-#             actions.clear()
-#             rewards.clear()
-#             p.reset_game()
-
-#         # observation = p.getScreenRGB()  # skip this during training
-        
-#         # state
-#         gameState = game.getGameState()
-#         discreteState = dz.discretize(gameState)
-#         stateIdx = getGameStateIdx(discreteState)
-#         states.append(stateIdx)
-
-#         # action
-#         actionIdx = agent.pickAction(stateIdx)
-#         action = getActionFromIdx(actionIdx)
-#         actions.append(actionIdx)
-
-#         # reward
-#         reward = p.act(action)
-#         rewards.append(reward)
-
-#     agent.updateQ(episodes=episodes)
-#     agent.updatePolicy()
 
 states = []
 actions = []
 rewards = []
 
 # logfile
-fp = open("rewards.log", "w")
+f_reward = open("rewards.log", "w")
+f_q = open("q.log", "w")
+
 
 while True: 
     if p.game_over():
@@ -213,7 +164,11 @@ while True:
         print(f"episode {episode_idx}: {sum(rewards)}")
 
         # logging
-        fp.write(f"{sum(rewards)}\n")
+        f_reward.write(f"{sum(rewards)}\n")
+        for s in range(NUM_STATES):
+            for a in range(NUM_ACTIONS):
+                f_q.write(f"{agent.Q_value[s][a]} ")
+        f_q.write("\n")
 
         # update agent
         agent.updateQ([episode])

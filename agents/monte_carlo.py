@@ -33,14 +33,9 @@ class MonteCarlo:
         self.num_actions = num_actions
         self.episode_count = 0
 
-        self.Q_value = []
-        for i in range(self.num_states):                            
-            # initialize Q-values as random
-            # Q-value for all actions for a certain state
-            self.Q_value.append(np.random.random_sample(size= num_actions))
-        
+        self.Q_value = np.random.rand(self.num_states, self.num_actions)
         # number of enocounters of state-action pair
-        self.state_action_visit = [[0]*self.num_actions]*self.num_states
+        self.state_action_visit = np.zeros((self.num_states, self.num_actions))
         self.policy = np.random.choice(range(self.num_actions), size= (self.num_states))
 
         
@@ -49,9 +44,6 @@ class MonteCarlo:
 
         self.epsilon_mode = epsilon_mode
         self.epsilon = epsilon
-        # for inverse epsilon, initialize as 1 cause passed value doesn't matter
-        if self.epsilon_mode == "inverse":
-            self.epsilon = 1
 
         self.alpha_mode = alpha_mode
         self.alpha = alpha
@@ -75,12 +67,12 @@ class MonteCarlo:
 
     def calculateReturn (self, rewards, T):
         """Returns the return values for 0 to T-1"""
-        G = [0]*T
+        G = np.zeros(T)
         G[T-1] = rewards[T-1]   # last return at timestep T-1
         
         idx = T-2
         while idx >= 0:
-            G[idx] = self.discount_factor*G[idx+1] + rewards[idx]   # dynamically fill return
+            G[idx] = rewards[idx] + self.discount_factor*G[idx+1]   # dynamically fill return
             idx -= 1
         
         return G
@@ -141,21 +133,21 @@ class MonteCarlo:
 
     def updatePolicy (self):
         """Update the policy based on current Q-values"""
-        for s in range(self.num_states):
-            q = self.Q_value[s]
-            a_greedy = np.argmax(q)     # the greedy choice from Q
-            if self.epsilon_mode is None:    # pure greedy choice
-                self.policy[s] = a_greedy
-            else:
-                # epsilon greedy
-                prob_a = [(self.epsilon/self.num_actions)]*self.num_actions
-                prob_a[a_greedy] += 1 - self.epsilon
-                a_epsilon_greedy = np.random.choice(range(self.num_actions), p= prob_a)
-                self.policy[s] = a_epsilon_greedy
-        
         # update epsilon for next policy update
         if self.epsilon_mode == "inverse":
             self.epsilon = 1/self.episode_count
+
+        for s in range(self.num_states):
+            if self.epsilon_mode is None:    # pure greedy choice
+                self.policy[s] = np.argmax(self.Q_value[s])
+            else:
+                # epsilon greedy
+                p = np.random.random()
+                if p < self.epsilon:
+                    self.policy[s] = np.random.choice(self.num_actions)
+                else:
+                    self.policy[s] = np.argmax(self.Q_value[s])
+        
 
 
 
