@@ -11,12 +11,12 @@ HEIGHT = 148
 FPS = 60
 
 # discretization params
-NUM_BALL_X_BINS = 10            # important
-NUM_BALL_Y_BINS = 10            # important
-NUM_PLAYER_Y_BINS = 6           # important
+NUM_BALL_X_BINS = 6            # important
+NUM_BALL_Y_BINS = 6            # important
+NUM_PLAYER_Y_BINS = 4           # important
 
-NUM_BALL_X_VEL_BINS = 4         # less important
-NUM_BALL_Y_VEL_BINS = 4         # less important
+NUM_BALL_X_VEL_BINS = 2         # less important
+NUM_BALL_Y_VEL_BINS = 2         # less important
 
 NUM_CPU_Y_BINS = 1              # ignore for now == single bin
 NUM_PLAYER_VEL_BINS = 1         # ignore for now == single bin
