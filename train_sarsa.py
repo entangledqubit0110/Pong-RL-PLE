@@ -150,27 +150,31 @@ while True:
 
     # choose action based on S
     actionIdx = agent.pickAction(stateIdx)
-    action = getActionFromIdx(actionIdx)
     # set A in agent
     agent.lastAction = actionIdx
 
     while True:
+        # try action and get reward
+        action = getActionFromIdx(agent.lastAction)
         reward = p.act(action)
         rewards.append(reward)
 
         # go to next State
-        gameState = game.getGameState()
-        discreteState = dz.discretize(gameState)
+        _gameState = game.getGameState()
+        _discreteState = dz.discretize(_gameState)
         # nextState
-        _stateIdx = getGameStateIdx(discreteState)
+        _stateIdx = getGameStateIdx(_discreteState)
 
         # choose action based on S
         # nextAction
-        _actionIdx = agent.pickAction(stateIdx)
-        action = getActionFromIdx(actionIdx)
+        _actionIdx = agent.pickAction(_stateIdx)
 
         # update last state action pair based on observed ones
         agent.updateQ(_stateIdx, _actionIdx, reward)
+        
+        # update for next round
+        agent.lastState = _stateIdx
+        agent.lastAction = _actionIdx
 
         if p.game_over():
             episode_idx += 1

@@ -32,9 +32,6 @@ class SARSA:
                                                         + self.discount * self.Q_values[state][action]
                                                         - self.Q_values[self.lastState][self.lastAction])
 
-        # update last seen state action pair
-        self.lastState = state
-        self.lastAction = action
 
 
     def pickAction (self, state):
