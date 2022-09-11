@@ -2,7 +2,9 @@ from ple.games.pong import Pong
 from ple import PLE
 from discrete import Discretizer
 from agents.monte_carlo import MonteCarlo
-from agents.util import print_msg_box
+from util import getActionFromIdx
+
+from util import print_msg_box
 from pprint import pprint
 
 # game panel details
@@ -72,24 +74,6 @@ def getGameStateIdx (discrete_gameState):
             )
     
     return idx
-
-def getActionIdx (action):
-    """Get idx for 3 types of actions: 115, 119 and None"""
-    if action is None:
-        return 0
-    elif action == 115:
-        return 1
-    elif action == 119:
-        return 2
-
-def getActionFromIdx (idx):
-    """Get action from idx"""
-    if idx == 0:
-        return None
-    elif idx == 1:
-        return  115
-    elif idx == 2:
-        return 119
 
 
 # initialize game
