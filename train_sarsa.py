@@ -13,9 +13,9 @@ HEIGHT = 148
 FPS = 60
 
 # discretization params
-NUM_BALL_X_BINS = 8            # important
-NUM_BALL_Y_BINS = 8            # important
-NUM_PLAYER_Y_BINS = 4           # important
+NUM_BALL_X_BINS = 10            # important
+NUM_BALL_Y_BINS = 10            # important
+NUM_PLAYER_Y_BINS = 10           # important
 
 NUM_BALL_X_VEL_BINS = 4         # less important
 NUM_BALL_Y_VEL_BINS = 4         # less important
@@ -73,7 +73,7 @@ def getGameStateIdx (discrete_gameState):
                 )
             )
     
-    return idx
+    return int(idx)
 
 
 
@@ -116,7 +116,7 @@ pprint(limits)
 
 # agent
 agent = SARSA(NUM_STATES, NUM_ACTIONS, 
-                alpha= 0.05, epsilon= 0.9, 
+                alpha= 0.05, epsilon= 0.1, 
                 discount_factor= 0.95)
 
 print_msg_box(" AGENT ")
@@ -139,6 +139,7 @@ p.init()
 
 rewards = []
 episode_idx = 0
+FOLLOW_REWARD_SCALING = 200
 
 while True:
     # initalize S
@@ -157,7 +158,7 @@ while True:
         # try action and get reward
         action = getActionFromIdx(agent.lastAction)
         reward = p.act(action)
-        rewards.append(reward)
+
 
         # go to next State
         _gameState = game.getGameState()
@@ -165,6 +166,12 @@ while True:
         # nextState
         _stateIdx = getGameStateIdx(_discreteState)
 
+        # following the ball reward
+        # scaled reward of negative of abs diff between ball and players y position
+        follow_reward = -1*abs(_gameState['ball_y'] - _gameState['player_y'])/FOLLOW_REWARD_SCALING
+        reward += follow_reward
+        rewards.append(reward)
+        
         # choose action based on S
         # nextAction
         _actionIdx = agent.pickAction(_stateIdx)

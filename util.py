@@ -21,6 +21,8 @@ def getActionIdx (action):
         return 1
     elif action == 119:
         return 2
+    else: 
+        raise ValueError("Unknown action")
 
 def getActionFromIdx (idx):
     """Get action from idx"""
@@ -30,6 +32,8 @@ def getActionFromIdx (idx):
         return  115
     elif idx == 2:
         return 119
+    else:
+        raise ValueError("Unknown action idx")
 
 def getGameStateIdx (discrete_gameState, binNums):
     """Return idx of discretized gameState, idx belongs in range 0 to NUM_STATE"""

@@ -40,9 +40,9 @@ class SARSA:
         """
         p = np.random.random()
         if p < self.epsilon:
-            return np.random.choice(self.num_actions)
+            return int(np.random.choice(self.num_actions))
         else:
-            return np.argmax(self.Q_values[state])
+            return int(np.argmax(self.Q_values[state]))
 
 
 

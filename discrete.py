@@ -35,7 +35,7 @@ class Discretizer:
         # bin index starts from 0
         bin_idx = np.digitize(val, bins= self.binBoundary[key]) - 1
         
-        return bin_idx
+        return int(bin_idx)
 
 
 

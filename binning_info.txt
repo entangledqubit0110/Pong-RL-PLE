@@ -14,3 +14,5 @@ gameState:
     velocity bound by game dimensions
     ball_x_velocity: -width to width
     ball_y_velocity: -height to height
+
+    num x-axis bins = num y-axis bins
