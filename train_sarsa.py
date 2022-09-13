@@ -2,7 +2,8 @@ from ple.games.pong import Pong
 from ple import PLE
 from discrete import Discretizer
 from agents.sarsa import SARSA
-from util import getActionIdx, getActionFromIdx
+from util import getActionFromIdx
+import signal
 
 from util import print_msg_box
 from pprint import pprint
@@ -125,6 +126,7 @@ print(agent)
 # discretizer
 dz = Discretizer(limits= limits, bins= bins)
 dz.createBins()
+print_msg_box(" BIN BOUNDARIES ")
 pprint(dz.binBoundary)
 
 
@@ -133,13 +135,28 @@ pprint(dz.binBoundary)
 p.init()
 
 # logfile
-# f_reward = open("rewards.log", "w")
+f_reward = open("rewards.log", "w")
 # f_q = open("q.log", "w")
 
+def handler (signum, frame):
+    print("Saving current Q-values...")
+    with open("final_Q.log", 'w') as fp:
+        for s in range(agent.num_states):
+            for a in range(agent.num_actions):
+                fp.write(str(agent.Q_values[s][a]))
+                fp.write(" ")
+            fp.write("\n")
+    exit(1)
 
+signal.signal(signal.SIGINT, handler)
+
+
+print("---------------------------------------------------")
 rewards = []
 episode_idx = 0
 FOLLOW_REWARD_SCALING = 200
+
+tot_reward = 0
 
 while True:
     # initalize S
@@ -185,8 +202,17 @@ while True:
 
         if p.game_over():
             episode_idx += 1
-            print(f"epsiode {episode_idx}: {sum(rewards)}")
+            f_reward.write(f"{episode_idx},{len(rewards)},{sum(rewards)}\n")
+            
+            tot_reward += sum(rewards)
+            if episode_idx % 1000 == 0:
+                print(f"episode {episode_idx-1000+1}:{episode_idx}: avg reward = {tot_reward/1000}")
+                tot_reward = 0
+            
             rewards.clear()
+
+
+
             p.reset_game()
             break
 
