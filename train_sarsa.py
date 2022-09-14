@@ -117,8 +117,10 @@ pprint(limits)
 
 # agent
 agent = SARSA(NUM_STATES, NUM_ACTIONS, 
-                alpha= 0.05, epsilon= 0.1, 
-                discount_factor= 0.95)
+                alpha= 0.05, discount_factor= 0.95)
+# epsilon at first 1
+# decay epsilon as 1\episode_cnt
+epsilon = 1
 
 print_msg_box(" AGENT ")
 print(agent)
@@ -149,6 +151,7 @@ def handler (signum, frame):
     exit(1)
 
 signal.signal(signal.SIGINT, handler)
+signal.signal(signal.SIGKILL, handler)
 
 
 print("---------------------------------------------------")
@@ -191,7 +194,7 @@ while True:
         
         # choose action based on S
         # nextAction
-        _actionIdx = agent.pickAction(_stateIdx)
+        _actionIdx = agent.pickAction(_stateIdx, epsilon= epsilon)
 
         # update last state action pair based on observed ones
         agent.updateQ(_stateIdx, _actionIdx, reward)
@@ -211,7 +214,8 @@ while True:
             
             rewards.clear()
 
-
+            # epsilon for next episode
+            epsilon = 1/(episode_idx+1)
 
             p.reset_game()
             break
