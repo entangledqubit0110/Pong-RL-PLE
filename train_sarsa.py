@@ -151,7 +151,6 @@ def handler (signum, frame):
     exit(1)
 
 signal.signal(signal.SIGINT, handler)
-signal.signal(signal.SIGKILL, handler)
 
 
 print("---------------------------------------------------")
