@@ -169,7 +169,7 @@ while True:
     agent.lastState = stateIdx
 
     # choose action based on S
-    actionIdx = agent.pickAction(stateIdx)
+    actionIdx = agent.pickAction(stateIdx, epsilon= epsilon)
     # set A in agent
     agent.lastAction = actionIdx
 
