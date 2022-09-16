@@ -14,11 +14,6 @@ class MonteCarlo:
     visit:          "first" or "every", default value is "every"
     discount_factor: discount factor for return calculation
 
-    epsilon_mode:   "constant" or "inverse" or None
-                    default None when we use pure greedy policy
-                    when "constant", takes the value of epsilon
-                    when "inverse, uses 1/episode no. that follows GLIE property
-    epsilon:        can be a float value for constant epsilon
 
     alpha_mode:     "constant" or "inverse" or None
                     default None when 1/N(s) is used for Q-value updates
@@ -28,22 +23,19 @@ class MonteCarlo:
 
     """
     def __init__(self, num_states, num_actions, visit= "every", discount_factor= 0.9, 
-                epsilon= None, epsilon_mode= None, alpha= None, alpha_mode= None):
+                alpha= None, alpha_mode= None):
         self.num_states = num_states
         self.num_actions = num_actions
         self.episode_count = 0
 
-        self.Q_value = np.random.rand(self.num_states, self.num_actions)
+        self.Q_values = np.random.rand(self.num_states, self.num_actions)
         # number of enocounters of state-action pair
         self.state_action_visit = np.zeros((self.num_states, self.num_actions))
-        self.policy = np.random.choice(range(self.num_actions), size= (self.num_states))
 
         
         self.visit_mode = visit
         self.discount_factor = discount_factor
 
-        self.epsilon_mode = epsilon_mode
-        self.epsilon = epsilon
 
         self.alpha_mode = alpha_mode
         self.alpha = alpha
@@ -107,9 +99,9 @@ class MonteCarlo:
 
                     # forgetting enabled or not
                     if self.alpha_mode is None:
-                        self.Q_value[S_t][A_t] += (G[t] - self.Q_value[S_t][A_t])/self.state_action_visit[S_t][A_t]
+                        self.Q_values[S_t][A_t] += (G[t] - self.Q_values[S_t][A_t])/self.state_action_visit[S_t][A_t]
                     else:
-                        self.Q_value[S_t][A_t] += self.alpha * (G[t] - self.Q_value[S_t][A_t])
+                        self.Q_values[S_t][A_t] += self.alpha * (G[t] - self.Q_values[S_t][A_t])
 
                 # every-visit MC
                 elif self.visit_mode == "every":
@@ -117,9 +109,9 @@ class MonteCarlo:
 
                     # forgetting enabled or not
                     if self.alpha_mode is None:
-                        self.Q_value[S_t][A_t] += (G[t] - self.Q_value[S_t][A_t])/self.state_action_visit[S_t][A_t]
+                        self.Q_values[S_t][A_t] += (G[t] - self.Q_values[S_t][A_t])/self.state_action_visit[S_t][A_t]
                     else:
-                        self.Q_value[S_t][A_t] += self.alpha * (G[t] - self.Q_value[S_t][A_t])
+                        self.Q_values[S_t][A_t] += self.alpha * (G[t] - self.Q_values[S_t][A_t])
             
             # reinit is_visited before next episode
             if self.visit_mode == "first":
@@ -131,29 +123,20 @@ class MonteCarlo:
             if self.alpha_mode == "inverse":
                 self.alpha = 1/np.power(self.episode_count, self.alpha_power)
 
-    def updatePolicy (self):
-        """Update the policy based on current Q-values"""
-        # update epsilon for next policy update
-        if self.epsilon_mode == "inverse":
-            self.epsilon = 1/self.episode_count
-
-        for s in range(self.num_states):
-            if self.epsilon_mode is None:    # pure greedy choice
-                self.policy[s] = np.argmax(self.Q_value[s])
-            else:
-                # epsilon greedy
-                p = np.random.random()
-                if p < self.epsilon:
-                    self.policy[s] = np.random.choice(self.num_actions)
-                else:
-                    self.policy[s] = np.argmax(self.Q_value[s])
         
 
 
 
-    def pickAction (self, obs):
+    def pickAction (self, state, epsilon):
         """ Return an action given the state"""
-        return self.policy[obs]
+        """
+        epsilon greedy choice of action from state
+        """
+        p = np.random.random()
+        if p < epsilon:
+            return int(np.random.choice(self.num_actions))
+        else:
+            return int(np.argmax(self.Q_values[state]))
         
 
         

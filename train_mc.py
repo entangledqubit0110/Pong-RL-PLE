@@ -3,6 +3,7 @@ from ple import PLE
 from discrete import Discretizer
 from agents.monte_carlo import MonteCarlo
 from util import getActionFromIdx
+import signal
 
 from util import print_msg_box
 from pprint import pprint
@@ -78,7 +79,7 @@ def getGameStateIdx (discrete_gameState):
 
 # initialize game
 game = Pong(width= WIDTH, height= HEIGHT)
-p = PLE(game, fps=FPS, display_screen=False, force_fps=True)
+p = PLE(game, fps=FPS, display_screen=True, force_fps=True)
 
 
 limits = {}
@@ -111,8 +112,11 @@ pprint(limits)
 
 
 # agent
-agent = MonteCarlo(num_states= NUM_STATES, num_actions= NUM_ACTIONS, epsilon_mode="inverse",
-                    alpha_mode=None)
+agent = MonteCarlo(num_states= NUM_STATES, num_actions= NUM_ACTIONS,
+                    discount_factor=0.95, alpha_mode=None)
+# epsilon at first 1
+# decay epsilon as 1\episode_cnt
+epsilon = 1
 
 print_msg_box(" AGENT ")
 print(agent)
@@ -124,9 +128,6 @@ pprint(dz.binBoundary)
 
 
 episode_idx = 0
-generation_idx = 0
-episode_in_generation = 1
-
 # start game
 p.init()
 
@@ -137,26 +138,41 @@ rewards = []
 
 # logfile
 f_reward = open("rewards.log", "w")
-f_q = open("q.log", "w")
 
+def handler (signum, frame):
+    print("Saving current Q-values...")
+    with open("final_Q.log", 'w') as fp:
+        for s in range(agent.num_states):
+            for a in range(agent.num_actions):
+                fp.write(str(agent.Q_values[s][a]))
+                fp.write(" ")
+            fp.write("\n")
+    exit(1)
 
+signal.signal(signal.SIGINT, handler)
+
+FOLLOW_REWARD_SCALING = 200
+
+tot_reward = 0
 while True: 
     if p.game_over():
         # store episode information
-        episode_idx += 1        
-        episode = [states, actions, rewards]
-        print(f"episode {episode_idx}: {sum(rewards)}")
+        episode_idx += 1    
+        # epsilon for next episode
+        epsilon = 1/(episode_idx+1)
 
+        episode = [states, actions, rewards]
+        tot_reward += sum(rewards)
+        if episode_idx % 1000 == 0:
+            print(f"episode {episode_idx-1000+1}:{episode_idx}: avg reward = {tot_reward/1000}")
+            tot_reward = 0
+        
         # logging
-        f_reward.write(f"{sum(rewards)}\n")
-        for s in range(NUM_STATES):
-            for a in range(NUM_ACTIONS):
-                f_q.write(f"{agent.Q_value[s][a]} ")
-        f_q.write("\n")
+        f_reward.write(f"{episode_idx},{len(rewards)},{sum(rewards)}\n")
+
 
         # update agent
         agent.updateQ([episode])
-        agent.updatePolicy()
 
         # reset before next episode
         states.clear()
@@ -172,10 +188,15 @@ while True:
     states.append(stateIdx)
 
     # action
-    actionIdx = agent.pickAction(stateIdx)
+    actionIdx = agent.pickAction(stateIdx, epsilon= epsilon)
     action = getActionFromIdx(actionIdx)
     actions.append(actionIdx)
 
     # reward
     reward = p.act(action)
+    # following the ball reward
+    # scaled reward of negative of abs diff between ball and players y position
+    follow_reward = -1*abs(gameState['ball_y'] - gameState['player_y'])/FOLLOW_REWARD_SCALING
+    reward += follow_reward
+
     rewards.append(reward)
