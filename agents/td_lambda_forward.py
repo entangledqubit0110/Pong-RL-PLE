@@ -1,6 +1,6 @@
 import numpy as np
 
-class Td_Lambda:
+class TD_Lambda:
     """
     Td Lambda Agent
     -------------------------

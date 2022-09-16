@@ -145,7 +145,7 @@ def handler (signum, frame):
     with open("final_Q.log", 'w') as fp:
         for s in range(agent.num_states):
             for a in range(agent.num_actions):
-                fp.write(str(agent.Q_values[s][a]))
+                fp.write(str(agent.Q_value[s][a]))
                 fp.write(" ")
             fp.write("\n")
     exit(1)
