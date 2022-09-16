@@ -14,12 +14,12 @@ HEIGHT = 148
 FPS = 60
 
 # discretization params
-NUM_BALL_X_BINS = 8            # important
-NUM_BALL_Y_BINS = 8            # important
-NUM_PLAYER_Y_BINS = 4           # important
+NUM_BALL_X_BINS = 12            # important
+NUM_BALL_Y_BINS = 12            # important
+NUM_PLAYER_Y_BINS = 12           # important
 
-NUM_BALL_X_VEL_BINS = 4         # less important
-NUM_BALL_Y_VEL_BINS = 4         # less important
+NUM_BALL_X_VEL_BINS = 5         # less important
+NUM_BALL_Y_VEL_BINS = 5         # less important
 
 NUM_CPU_Y_BINS = 1              # ignore for now == single bin
 NUM_PLAYER_VEL_BINS = 1         # ignore for now == single bin
@@ -79,7 +79,7 @@ def getGameStateIdx (discrete_gameState):
 
 # initialize game
 game = Pong(width= WIDTH, height= HEIGHT)
-p = PLE(game, fps=FPS, display_screen=True, force_fps=True)
+p = PLE(game, fps=FPS, display_screen=False, force_fps=True)
 
 
 limits = {}
