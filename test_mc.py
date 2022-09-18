@@ -2,7 +2,7 @@ import numpy as np
 from ple.games.pong import Pong
 from ple import PLE
 from discrete import Discretizer
-from agents.sarsa import SARSA
+from agents.monte_carlo import MonteCarlo
 from util import getActionFromIdx
 import argparse
 
@@ -80,11 +80,7 @@ def getGameStateIdx (discrete_gameState):
                 )
             )
     
-    return int(idx)
-
-
-
-
+    return idx
 
 
 # initialize game
@@ -122,8 +118,8 @@ pprint(limits)
 
 
 # agent
-agent = SARSA(NUM_STATES, NUM_ACTIONS, 
-                alpha= 0.05, discount_factor= 0.95)
+agent = MonteCarlo(num_states= NUM_STATES, num_actions= NUM_ACTIONS,
+                    discount_factor=0.95, alpha_mode=None)
 # greedy for test
 epsilon = 1
 
@@ -139,7 +135,6 @@ if matrix.shape != agent.Q_values.shape:
     raise ValueError("mismatching shape for saved Q values")
 else:
     agent.Q_values = matrix
-    
 
 print_msg_box(" AGENT ")
 print(agent)
@@ -147,21 +142,20 @@ print(agent)
 # discretizer
 dz = Discretizer(limits= limits, bins= bins)
 dz.createBins()
-print_msg_box(" BIN BOUNDARIES ")
 pprint(dz.binBoundary)
 
 
-
+episode_idx = 0
 # start game
 p.init()
-episode_idx = 1
 
-while episode_idx < 100:
+while episode_idx < 100: 
     if p.game_over():
         print(f"episode {episode_idx}")
         episode_idx += 1
         p.reset_game()
 
+    
     gameState = p.getGameState()
     discreteState = dz.discretize(gameState)
     stateIdx = getGameStateIdx(discreteState)
@@ -170,8 +164,3 @@ while episode_idx < 100:
     reward = p.act(action)
 
     observation = p.getScreenRGB()
-
-    
-
-
-
