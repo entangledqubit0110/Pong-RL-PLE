@@ -1,0 +1,58 @@
+╔════════╗
+║  BINS  ║
+╚════════╝
+{'ball_velocity_x': 5,
+ 'ball_velocity_y': 5,
+ 'ball_x': 16,
+ 'ball_y': 16,
+ 'cpu_y': 1,
+ 'player_velocity': 1,
+ 'player_y': 16}
+╔══════════╗
+║  LIMITS  ║
+╚══════════╝
+{'ball_velocity_x': (-220, 220),
+ 'ball_velocity_y': (-148, 148),
+ 'ball_x': (0, 220),
+ 'ball_y': (0, 148),
+ 'cpu_y': (0, 148),
+ 'player_velocity': (-59.2, 59.2),
+ 'player_y': (0, 148)}
+╔═════════╗
+║  AGENT  ║
+╚═════════╝
+Monte Carlo Agent
+num_states: 102400
+num_actions: 3
+visit_mode: every
+discount_factor: 0.95
+alpha_mode: inverse
+alpha: 1
+
+{'ball_velocity_x': array([-220., -110.,    0.,  110.,  220.]),
+ 'ball_velocity_y': array([-148.,  -74.,    0.,   74.,  148.]),
+ 'ball_x': array([  0.        ,  14.66666667,  29.33333333,  44.        ,
+        58.66666667,  73.33333333,  88.        , 102.66666667,
+       117.33333333, 132.        , 146.66666667, 161.33333333,
+       176.        , 190.66666667, 205.33333333, 220.        ]),
+ 'ball_y': array([  0.        ,   9.86666667,  19.73333333,  29.6       ,
+        39.46666667,  49.33333333,  59.2       ,  69.06666667,
+        78.93333333,  88.8       ,  98.66666667, 108.53333333,
+       118.4       , 128.26666667, 138.13333333, 148.        ]),
+ 'cpu_y': array([0.]),
+ 'player_velocity': array([-59.2]),
+ 'player_y': array([  0.        ,   9.86666667,  19.73333333,  29.6       ,
+        39.46666667,  49.33333333,  59.2       ,  69.06666667,
+        78.93333333,  88.8       ,  98.66666667, 108.53333333,
+       118.4       , 128.26666667, 138.13333333, 148.        ])}
+episode 1:1000: avg reward = -487.86516176168897, avg length = 4977.309
+episode 1001:2000: avg reward = -1328.3725712736284, avg length = 32810.336
+episode 2001:3000: avg reward = -1213.1368724609215, avg length = 42611.666
+episode 3001:4000: avg reward = -1211.1939984899223, avg length = 42895.634
+episode 4001:5000: avg reward = -1220.2324973198683, avg length = 43102.543
+episode 5001:6000: avg reward = -1217.1708287074546, avg length = 43592.789
+episode 6001:7000: avg reward = -1260.5984106687276, avg length = 44501.663
+episode 7001:8000: avg reward = -1222.1460443329015, avg length = 43541.562
+episode 8001:9000: avg reward = -1230.5958460885258, avg length = 43852.034
+episode 9001:10000: avg reward = -1239.8586903973492, avg length = 44035.75
+11 hrs
