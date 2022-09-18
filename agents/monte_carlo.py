@@ -72,7 +72,7 @@ class MonteCarlo:
         
         idx = T-2
         while idx >= 0:
-            G[idx] = rewards[idx] + self.discount_factor*G[idx+1]   # dynamically fill return
+            G[idx] = rewards[idx] + self.discount_factor * G[idx+1]   # dynamically fill return
             idx -= 1
         
         return G

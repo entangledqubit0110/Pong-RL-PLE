@@ -1,0 +1,105 @@
+╔════════╗
+║  BINS  ║
+╚════════╝
+{'ball_velocity_x': 4,
+ 'ball_velocity_y': 4,
+ 'ball_x': 10,
+ 'ball_y': 10,
+ 'cpu_y': 1,
+ 'player_velocity': 1,
+ 'player_y': 10}
+╔══════════╗
+║  LIMITS  ║
+╚══════════╝
+{'ball_velocity_x': (-220, 220),
+ 'ball_velocity_y': (-148, 148),
+ 'ball_x': (0, 220),
+ 'ball_y': (0, 148),
+ 'cpu_y': (0, 148),
+ 'player_velocity': (-59.2, 59.2),
+ 'player_y': (0, 148)}
+╔═════════╗
+║  AGENT  ║
+╚═════════╝
+TD Agent
+num_states: 16000
+num_actions: 3
+lamda: 0.5
+discount_factor: 0.95
+epsilon_mode: inverse
+epsilon: None
+alpha_mode: inverse
+alpha: 1
+
+╔══════════════════╗
+║  BIN BOUNDARIES  ║
+╚══════════════════╝
+{'ball_velocity_x': array([-220.        ,  -73.33333333,   73.33333333,  220.        ]),
+ 'ball_velocity_y': array([-148.        ,  -49.33333333,   49.33333333,  148.        ]),
+ 'ball_x': array([  0.        ,  24.44444444,  48.88888889,  73.33333333,
+        97.77777778, 122.22222222, 146.66666667, 171.11111111,
+       195.55555556, 220.        ]),
+ 'ball_y': array([  0.        ,  16.44444444,  32.88888889,  49.33333333,
+        65.77777778,  82.22222222,  98.66666667, 115.11111111,
+       131.55555556, 148.        ]),
+ 'cpu_y': array([0.]),
+ 'player_velocity': array([-59.2]),
+ 'player_y': array([  0.        ,  16.44444444,  32.88888889,  49.33333333,
+        65.77777778,  82.22222222,  98.66666667, 115.11111111,
+       131.55555556, 148.        ])}
+---------------------------------------------------
+episode 1:1000: avg reward = -285.2361924743572
+episode 1001:2000: avg reward = -279.96624280200024
+episode 2001:3000: avg reward = -284.09557558597345
+episode 3001:4000: avg reward = -280.3531209667289
+episode 4001:5000: avg reward = -281.3046002570137
+episode 5001:6000: avg reward = -272.5816650675973
+episode 6001:7000: avg reward = -274.139401580688
+episode 7001:8000: avg reward = -277.35882724198933
+episode 8001:9000: avg reward = -275.9355121961851
+episode 9001:10000: avg reward = -280.9690554633123
+episode 10001:11000: avg reward = -277.5086974939796
+episode 11001:12000: avg reward = -277.7778414896535
+episode 12001:13000: avg reward = -277.4308701525478
+episode 13001:14000: avg reward = -282.9803748266728
+episode 14001:15000: avg reward = -276.1430910922813
+episode 15001:16000: avg reward = -280.370912054534
+episode 16001:17000: avg reward = -275.93537955255897
+episode 17001:18000: avg reward = -276.4686829394122
+episode 18001:19000: avg reward = -273.63253737744
+episode 19001:20000: avg reward = -277.0497841810901
+episode 20001:21000: avg reward = -275.52542899111205
+episode 21001:22000: avg reward = -275.3370500432561
+episode 22001:23000: avg reward = -272.1670466492857
+episode 23001:24000: avg reward = -280.4128669718712
+episode 24001:25000: avg reward = -276.64467200230973
+episode 25001:26000: avg reward = -274.80374195245076
+episode 26001:27000: avg reward = -275.9964854195992
+episode 27001:28000: avg reward = -276.8555669632873
+episode 28001:29000: avg reward = -275.20997672334187
+episode 29001:30000: avg reward = -274.5941410230438
+episode 30001:31000: avg reward = -272.17755037952446
+episode 31001:32000: avg reward = -280.08951853463327
+episode 32001:33000: avg reward = -275.5022585935584
+episode 33001:34000: avg reward = -273.7738562497411
+episode 34001:35000: avg reward = -273.0856240986213
+episode 35001:36000: avg reward = -271.243318185968
+episode 36001:37000: avg reward = -272.8190324581268
+episode 37001:38000: avg reward = -265.3567012177099
+episode 38001:39000: avg reward = -269.4610265032719
+episode 39001:40000: avg reward = -268.60237914798023
+episode 40001:41000: avg reward = -273.5471748029708
+episode 41001:42000: avg reward = -271.5381895220034
+episode 42001:43000: avg reward = -270.45517929625885
+episode 43001:44000: avg reward = -270.6292506273903
+episode 44001:45000: avg reward = -270.8568324963448
+episode 45001:46000: avg reward = -270.3885104604875
+episode 46001:47000: avg reward = -267.9042644114795
+episode 47001:48000: avg reward = -269.4100951394559
+episode 48001:49000: avg reward = -270.1463637021728
+episode 49001:50000: avg reward = -271.5612120702792
+episode 50001:51000: avg reward = -268.2954398657014
+episode 51001:52000: avg reward = -272.29901503803995
+episode 52001:53000: avg reward = -277.34010289469524
+episode 53001:54000: avg reward = -276.14799499547206
+6hrs
