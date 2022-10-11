@@ -1,0 +1,125 @@
+╔════════╗
+║  BINS  ║
+╚════════╝
+{'ball_velocity_x': 4,
+ 'ball_velocity_y': 4,
+ 'ball_x': 10,
+ 'ball_y': 10,
+ 'cpu_y': 1,
+ 'player_velocity': 1,
+ 'player_y': 10}
+╔══════════╗
+║  LIMITS  ║
+╚══════════╝
+{'ball_velocity_x': (-220, 220),
+ 'ball_velocity_y': (-148, 148),
+ 'ball_x': (0, 220),
+ 'ball_y': (0, 148),
+ 'cpu_y': (0, 148),
+ 'player_velocity': (-59.2, 59.2),
+ 'player_y': (0, 148)}
+╔═════════╗
+║  AGENT  ║
+╚═════════╝
+TD Agent
+num_states: 16000
+num_actions: 3
+lamda: 0.5
+discount_factor: 0.95
+epsilon_mode: constant
+epsilon: 0.2
+alpha_mode: constant
+alpha: 0.1
+
+╔══════════════════╗
+║  BIN BOUNDARIES  ║
+╚══════════════════╝
+{'ball_velocity_x': array([-220.        ,  -73.33333333,   73.33333333,  220.        ]),
+ 'ball_velocity_y': array([-148.        ,  -49.33333333,   49.33333333,  148.        ]),
+ 'ball_x': array([  0.        ,  24.44444444,  48.88888889,  73.33333333,
+        97.77777778, 122.22222222, 146.66666667, 171.11111111,
+       195.55555556, 220.        ]),
+ 'ball_y': array([  0.        ,  16.44444444,  32.88888889,  49.33333333,
+        65.77777778,  82.22222222,  98.66666667, 115.11111111,
+       131.55555556, 148.        ]),
+ 'cpu_y': array([0.]),
+ 'player_velocity': array([-59.2]),
+ 'player_y': array([  0.        ,  16.44444444,  32.88888889,  49.33333333,
+        65.77777778,  82.22222222,  98.66666667, 115.11111111,
+       131.55555556, 148.        ])}
+---------------------------------------------------
+episode 1:1000: avg reward = -281.9355407348794
+episode 1001:2000: avg reward = -277.74205857626276
+episode 2001:3000: avg reward = -280.4461560970258
+episode 3001:4000: avg reward = -273.2066340048825
+episode 4001:5000: avg reward = -277.4072759132967
+episode 5001:6000: avg reward = -272.1913036067897
+episode 6001:7000: avg reward = -278.6883473456701
+episode 7001:8000: avg reward = -275.158757817236
+episode 8001:9000: avg reward = -280.77927645385563
+episode 9001:10000: avg reward = -277.45013016489264
+/home/sourav/pygame/PyGame-Learning-Environment/Pong-RL-PLE/agents/td_lambda_forward.py:97: RuntimeWarning: overflow encountered in double_scalars
+  self.Q_value[S_t][A_t] += self.alpha * TDError[t]
+/home/sourav/pygame/PyGame-Learning-Environment/Pong-RL-PLE/agents/td_lambda_forward.py:74: RuntimeWarning: invalid value encountered in double_scalars
+  delta_t = rewards[idx] + self.discount_factor * self.Q_value[states[idx]][actions[idx]] - self.Q_value[states[idx+1]][actions[idx+1]] #delta_t in slides
+episode 10001:11000: avg reward = -278.2810716838334
+episode 11001:12000: avg reward = -268.6352705975382
+episode 12001:13000: avg reward = -267.091371056395
+episode 13001:14000: avg reward = -269.78886791175233
+episode 14001:15000: avg reward = -269.08641368214205
+episode 15001:16000: avg reward = -267.8344909124636
+episode 16001:17000: avg reward = -265.4272417541865
+episode 17001:18000: avg reward = -269.4109854016997
+episode 18001:19000: avg reward = -267.6242109664973
+episode 19001:20000: avg reward = -267.3592757750415
+episode 20001:21000: avg reward = -269.2617169356607
+episode 21001:22000: avg reward = -269.6289090359304
+episode 22001:23000: avg reward = -266.072172613287
+episode 23001:24000: avg reward = -265.74304536219273
+episode 24001:25000: avg reward = -265.93150854422095
+episode 25001:26000: avg reward = -266.95480744965624
+episode 26001:27000: avg reward = -266.98042153540047
+episode 27001:28000: avg reward = -268.1876661466005
+episode 28001:29000: avg reward = -268.4724145029611
+episode 29001:30000: avg reward = -267.66694643878634
+episode 30001:31000: avg reward = -266.084654268793
+episode 31001:32000: avg reward = -268.9960967830247
+episode 32001:33000: avg reward = -267.0808182484164
+episode 33001:34000: avg reward = -266.1093500697323
+episode 34001:35000: avg reward = -266.50440996437027
+episode 35001:36000: avg reward = -270.0699367584806
+episode 36001:37000: avg reward = -266.04586016215677
+episode 37001:38000: avg reward = -264.61329473991213
+episode 38001:39000: avg reward = -266.0278423740598
+episode 39001:40000: avg reward = -263.0225026973578
+episode 40001:41000: avg reward = -268.36502437235794
+episode 41001:42000: avg reward = -269.7836572104923
+episode 42001:43000: avg reward = -266.4978656391388
+episode 43001:44000: avg reward = -266.4322128106696
+episode 44001:45000: avg reward = -268.5240087478667
+episode 45001:46000: avg reward = -263.1694911678375
+episode 46001:47000: avg reward = -270.87487602293277
+episode 47001:48000: avg reward = -273.8908618288354
+episode 48001:49000: avg reward = -266.1096434573123
+episode 49001:50000: avg reward = -267.8372761745821
+episode 50001:51000: avg reward = -268.76083460600296
+episode 51001:52000: avg reward = -268.5770054260014
+episode 52001:53000: avg reward = -268.5467837077059
+episode 53001:54000: avg reward = -271.87387634735677
+episode 54001:55000: avg reward = -261.9341298015912
+episode 55001:56000: avg reward = -264.29725912403796
+episode 56001:57000: avg reward = -268.9736299721941
+episode 57001:58000: avg reward = -262.3911437567587
+episode 58001:59000: avg reward = -269.6389793909305
+episode 59001:60000: avg reward = -265.9332870499296
+episode 60001:61000: avg reward = -264.6182198607056
+episode 61001:62000: avg reward = -270.3150886960677
+episode 62001:63000: avg reward = -270.82182619615196
+episode 63001:64000: avg reward = -263.13456188558234
+episode 64001:65000: avg reward = -267.15230419433306
+episode 65001:66000: avg reward = -265.695967403482
+episode 66001:67000: avg reward = -268.83902366943073
+episode 67001:68000: avg reward = -267.526864429849
+episode 68001:69000: avg reward = -267.4287861562177
+episode 69001:70000: avg reward = -273.729866949093
+8hrs
