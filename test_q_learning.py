@@ -20,12 +20,12 @@ HEIGHT = 148
 FPS = 60
 
 # discretization params
-NUM_BALL_X_BINS = 10           # important
-NUM_BALL_Y_BINS = 10           # important
-NUM_PLAYER_Y_BINS = 10           # important
+NUM_BALL_X_BINS = 12            # important
+NUM_BALL_Y_BINS = 12            # important
+NUM_PLAYER_Y_BINS = 12           # important
 
-NUM_BALL_X_VEL_BINS = 4         # less important
-NUM_BALL_Y_VEL_BINS = 4         # less important
+NUM_BALL_X_VEL_BINS = 5         # less important
+NUM_BALL_Y_VEL_BINS = 5         # less important
 
 NUM_CPU_Y_BINS = 1              # ignore for now == single bin
 NUM_PLAYER_VEL_BINS = 1         # ignore for now == single bin
@@ -120,13 +120,12 @@ limits["ball_velocity_y"] = (MIN_BALL_Y_VELOCITY, MAX_BALL_Y_VELOCITY)
 print_msg_box(" LIMITS ")
 pprint(limits)
 
-# greedy for test
-epsilon = 1
 
 # agent
 agent = Q_Learning(NUM_STATES, NUM_ACTIONS, 
-                alpha= 0.05, discount_factor= 0.95,epsilon=0.9)
-
+                alpha= 0.05, discount_factor= 0.95)
+# greedy for test
+epsilon = 1
 
 # load Q values
 matrix = []
@@ -136,10 +135,10 @@ with open(args.param_file, 'r') as saved_q:
         matrix.append(numbers)
 
 matrix = np.array(matrix)
-if matrix.shape != agent.Q_value.shape:
+if matrix.shape != agent.Q_values.shape:
     raise ValueError("mismatching shape for saved Q values")
 else:
-    agent.Q_value = matrix
+    agent.Q_values = matrix
     
 
 print_msg_box(" AGENT ")
@@ -167,7 +166,7 @@ while episode_idx < 100:
     discreteState = dz.discretize(gameState)
     stateIdx = getGameStateIdx(discreteState)
 
-    action = getActionFromIdx(agent.pickAction(stateIdx))
+    action = getActionFromIdx(agent.pickAction(state=stateIdx, epsilon=1))
     reward = p.act(action)
 
     observation = p.getScreenRGB()
