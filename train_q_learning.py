@@ -2,7 +2,8 @@ from ple.games.pong import Pong
 from ple import PLE
 from discrete import Discretizer
 from agents.q_learning import Q_Learning
-from util import getActionIdx, getActionFromIdx
+from util import getActionFromIdx
+import signal
 
 from util import print_msg_box
 from pprint import pprint
@@ -13,9 +14,9 @@ HEIGHT = 148
 FPS = 60
 
 # discretization params
-NUM_BALL_X_BINS = 8            # important
-NUM_BALL_Y_BINS = 8            # important
-NUM_PLAYER_Y_BINS = 4           # important
+NUM_BALL_X_BINS = 10            # important
+NUM_BALL_Y_BINS = 10            # important
+NUM_PLAYER_Y_BINS = 10           # important
 
 NUM_BALL_X_VEL_BINS = 4         # less important
 NUM_BALL_Y_VEL_BINS = 4         # less important
@@ -73,7 +74,7 @@ def getGameStateIdx (discrete_gameState):
                 )
             )
     
-    return idx
+    return int(idx)
 
 
 
@@ -116,8 +117,10 @@ pprint(limits)
 
 # agent
 agent = Q_Learning(NUM_STATES, NUM_ACTIONS, 
-                alpha= 0.05, epsilon= 0.9, 
-                discount_factor= 0.95)
+                alpha= 0.05, discount_factor= 0.95)
+# epsilon at first 1
+# decay epsilon as 1\episode_cnt
+epsilon = 1
 
 print_msg_box(" AGENT ")
 print(agent)
@@ -125,6 +128,7 @@ print(agent)
 # discretizer
 dz = Discretizer(limits= limits, bins= bins)
 dz.createBins()
+print_msg_box(" BIN BOUNDARIES ")
 pprint(dz.binBoundary)
 
 
@@ -133,12 +137,28 @@ pprint(dz.binBoundary)
 p.init()
 
 # logfile
-# f_reward = open("rewards.log", "w")
+f_reward = open("rewards.log", "w")
 # f_q = open("q.log", "w")
 
+def handler (signum, frame):
+    print("Saving current Q-values...")
+    with open("final_Q.log", 'w') as fp:
+        for s in range(agent.num_states):
+            for a in range(agent.num_actions):
+                fp.write(str(agent.Q_values[s][a]))
+                fp.write(" ")
+            fp.write("\n")
+    exit(1)
 
+signal.signal(signal.SIGINT, handler)
+
+
+print("---------------------------------------------------")
 rewards = []
 episode_idx = 0
+FOLLOW_REWARD_SCALING = 200
+
+tot_reward = 0
 
 while True:
     # initalize S
@@ -149,7 +169,7 @@ while True:
     agent.lastState = stateIdx
 
     # choose action based on S
-    actionIdx = agent.pickAction(stateIdx)
+    actionIdx = agent.pickAction(stateIdx, epsilon= epsilon)
     # set A in agent
     agent.lastAction = actionIdx
 
@@ -157,7 +177,7 @@ while True:
         # try action and get reward
         action = getActionFromIdx(agent.lastAction)
         reward = p.act(action)
-        rewards.append(reward)
+
 
         # go to next State
         _gameState = game.getGameState()
@@ -165,9 +185,15 @@ while True:
         # nextState
         _stateIdx = getGameStateIdx(_discreteState)
 
+        # following the ball reward
+        # scaled reward of negative of abs diff between ball and players y position
+        follow_reward = -1*abs(_gameState['ball_y'] - _gameState['player_y'])/FOLLOW_REWARD_SCALING
+        reward += follow_reward
+        rewards.append(reward)
+        
         # choose action based on S
         # nextAction
-        _actionIdx = agent.pickAction(_stateIdx)
+        _actionIdx = agent.pickAction(_stateIdx, epsilon= epsilon)
 
         # update last state action pair based on observed ones
         agent.updateQ(_stateIdx, _actionIdx, reward)
@@ -178,8 +204,18 @@ while True:
 
         if p.game_over():
             episode_idx += 1
-            print(f"epsiode {episode_idx}: {sum(rewards)}")
+            f_reward.write(f"{episode_idx},{len(rewards)},{sum(rewards)}\n")
+            
+            tot_reward += sum(rewards)
+            if episode_idx % 1000 == 0:
+                print(f"episode {episode_idx-1000+1}:{episode_idx}: avg reward = {tot_reward/1000}")
+                tot_reward = 0
+            
             rewards.clear()
+
+            # epsilon for next episode
+            epsilon = 1/(episode_idx+1)
+
             p.reset_game()
             break
 
