@@ -1,0 +1,118 @@
+['NOOP', 'FIRE', 'RIGHT', 'LEFT', 'RIGHTFIRE', 'LEFTFIRE']
+Observation space shape: (4, 84, 84)
+Action space size: 6
+PolicyNetwork(
+  (conv_stack): Sequential(
+    (0): Conv2d(4, 32, kernel_size=(8, 8), stride=(4, 4))
+    (1): ReLU()
+    (2): Conv2d(32, 64, kernel_size=(4, 4), stride=(2, 2))
+    (3): ReLU()
+    (4): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1))
+    (5): ReLU()
+  )
+  (fc_stack): Sequential(
+    (0): Linear(in_features=3136, out_features=512, bias=True)
+    (1): ReLU()
+    (2): Linear(in_features=512, out_features=6, bias=True)
+    (3): Softmax(dim=1)
+  )
+)
+episode 1:50: avg reward = -20.8
+episode 51:100: avg reward = -20.22
+episode 101:150: avg reward = -20.52
+episode 151:200: avg reward = -20.18
+episode 201:250: avg reward = -20.38
+episode 251:300: avg reward = -20.48
+episode 301:350: avg reward = -20.38
+episode 351:400: avg reward = -20.02
+episode 401:450: avg reward = -20.52
+episode 451:500: avg reward = -20.58
+episode 501:550: avg reward = -20.3
+episode 551:600: avg reward = -19.88
+episode 601:650: avg reward = -20.38
+episode 651:700: avg reward = -20.08
+episode 701:750: avg reward = -20.46
+episode 751:800: avg reward = -20.12
+episode 801:850: avg reward = -20.3
+episode 851:900: avg reward = -20.5
+episode 901:950: avg reward = -20.64
+episode 951:1000: avg reward = -19.96
+episode 1001:1050: avg reward = -20.04
+episode 1051:1100: avg reward = -20.08
+episode 1101:1150: avg reward = -20.26
+episode 1151:1200: avg reward = -20.16
+episode 1201:1250: avg reward = -20.02
+episode 1251:1300: avg reward = -19.9
+episode 1301:1350: avg reward = -20.22
+episode 1351:1400: avg reward = -20.06
+episode 1401:1450: avg reward = -20.14
+episode 1451:1500: avg reward = -19.98
+episode 1501:1550: avg reward = -20.18
+episode 1551:1600: avg reward = -20.06
+episode 1601:1650: avg reward = -20.2
+episode 1651:1700: avg reward = -20.24
+episode 1701:1750: avg reward = -19.9
+episode 1751:1800: avg reward = -19.98
+episode 1801:1850: avg reward = -20.24
+episode 1851:1900: avg reward = -20.32
+episode 1901:1950: avg reward = -20.12
+episode 1951:2000: avg reward = -20.2
+episode 2001:2050: avg reward = -20.22
+episode 2051:2100: avg reward = -20.34
+episode 2101:2150: avg reward = -20.32
+episode 2151:2200: avg reward = -19.76
+episode 2201:2250: avg reward = -19.78
+episode 2251:2300: avg reward = -20.16
+episode 2301:2350: avg reward = -19.9
+episode 2351:2400: avg reward = -20.4
+episode 2401:2450: avg reward = -20.14
+episode 2451:2500: avg reward = -20.28
+episode 2501:2550: avg reward = -20.1
+episode 2551:2600: avg reward = -20.16
+episode 2601:2650: avg reward = -20.1
+episode 2651:2700: avg reward = -20.44
+episode 2701:2750: avg reward = -20.28
+episode 2751:2800: avg reward = -20.58
+episode 2801:2850: avg reward = -20.72
+episode 2851:2900: avg reward = -20.26
+episode 2901:2950: avg reward = -20.52
+episode 2951:3000: avg reward = -20.82
+episode 3001:3050: avg reward = -20.62
+episode 3051:3100: avg reward = -20.72
+episode 3101:3150: avg reward = -20.46
+episode 3151:3200: avg reward = -20.5
+episode 3201:3250: avg reward = -20.46
+episode 3251:3300: avg reward = -20.46
+episode 3301:3350: avg reward = -20.36
+episode 3351:3400: avg reward = -20.22
+episode 3401:3450: avg reward = -20.54
+episode 3451:3500: avg reward = -20.52
+episode 3501:3550: avg reward = -20.2
+episode 3551:3600: avg reward = -20.38
+episode 3601:3650: avg reward = -20.18
+episode 3651:3700: avg reward = -20.34
+episode 3701:3750: avg reward = -20.24
+episode 3751:3800: avg reward = -20.02
+episode 3801:3850: avg reward = -20.28
+episode 3851:3900: avg reward = -20.3
+episode 3901:3950: avg reward = -20.44
+episode 3951:4000: avg reward = -20.12
+episode 4001:4050: avg reward = -20.08
+episode 4051:4100: avg reward = -20.32
+episode 4101:4150: avg reward = -20.2
+episode 4151:4200: avg reward = -20.18
+episode 4201:4250: avg reward = -20.14
+episode 4251:4300: avg reward = -20.38
+episode 4301:4350: avg reward = -20.28
+episode 4351:4400: avg reward = -20.04
+episode 4401:4450: avg reward = -20.24
+episode 4451:4500: avg reward = -20.26
+episode 4501:4550: avg reward = -20.16
+episode 4551:4600: avg reward = -20.16
+episode 4601:4650: avg reward = -19.86
+episode 4651:4700: avg reward = -20.24
+episode 4701:4750: avg reward = -19.96
+episode 4751:4800: avg reward = -20.2
+episode 4801:4850: avg reward = -20.3
+episode 4851:4900: avg reward = -20.44
+episode 4901:4950: avg reward = -20.48
