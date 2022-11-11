@@ -20,12 +20,12 @@ HEIGHT = 148
 FPS = 60
 
 # discretization params
-NUM_BALL_X_BINS = 12            # important
-NUM_BALL_Y_BINS = 12            # important
-NUM_PLAYER_Y_BINS = 12           # important
+NUM_BALL_X_BINS = 10            # important
+NUM_BALL_Y_BINS = 10            # important
+NUM_PLAYER_Y_BINS = 10           # important
 
-NUM_BALL_X_VEL_BINS = 5         # less important
-NUM_BALL_Y_VEL_BINS = 5         # less important
+NUM_BALL_X_VEL_BINS = 4         # less important
+NUM_BALL_Y_VEL_BINS = 4         # less important
 
 NUM_CPU_Y_BINS = 1              # ignore for now == single bin
 NUM_PLAYER_VEL_BINS = 1         # ignore for now == single bin
@@ -135,6 +135,7 @@ with open(args.param_file, 'r') as saved_q:
         matrix.append(numbers)
 
 matrix = np.array(matrix)
+
 if matrix.shape != agent.Q_values.shape:
     raise ValueError("mismatching shape for saved Q values")
 else:
